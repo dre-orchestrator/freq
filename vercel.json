@@ -1,13 +1,6 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
-  "rewrites": [
-    { "source": "/platform", "destination": "/platform.html" },
-    { "source": "/about", "destination": "/about.html" },
-    { "source": "/team", "destination": "/team.html" },
-    { "source": "/contact", "destination": "/contact.html" },
-    { "source": "/solutions/barge-drafting", "destination": "/solutions/barge-drafting.html" }
-  ],
   "headers": [
     {
       "source": "/(.*)",
