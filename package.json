@@ -1,0 +1,13 @@
+{
+  "name": "freq-ai",
+  "version": "1.0.0",
+  "description": "FREQ AI — Autonomous Maritime Cargo Intelligence",
+  "scripts": {
+    "dev": "npx serve . -p 3000",
+    "build": "echo 'Static site — no build step required'",
+    "lint": "echo 'No JS linting configured for vanilla HTML site'"
+  },
+  "keywords": ["maritime", "autonomous", "barge", "drafting", "ai"],
+  "author": "Dre Alvarez",
+  "license": "UNLICENSED"
+}

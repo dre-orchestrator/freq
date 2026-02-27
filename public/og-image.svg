@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#080C18"/>
+
+  <!-- Blueprint grid at 5% opacity -->
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1E293B" stroke-width="0.7" opacity="0.5"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#grid)" opacity="0.5"/>
+
+  <!-- Purple accent line -->
+  <rect x="400" y="296" width="400" height="2" fill="#7C3AED"/>
+
+  <!-- FREQ AI heading -->
+  <text x="600" y="270"
+        font-family="Space Grotesk, Arial, sans-serif"
+        font-size="96"
+        font-weight="700"
+        fill="#FFFFFF"
+        text-anchor="middle"
+        letter-spacing="4">FREQ AI</text>
+
+  <!-- Tagline -->
+  <text x="600" y="360"
+        font-family="IBM Plex Sans, Arial, sans-serif"
+        font-size="28"
+        font-weight="400"
+        fill="#94A3B8"
+        text-anchor="middle"
+        letter-spacing="1">Autonomous Maritime Intelligence</text>
+
+  <!-- Bottom detail line -->
+  <text x="600" y="430"
+        font-family="JetBrains Mono, Courier New, monospace"
+        font-size="16"
+        font-weight="500"
+        fill="#3B4E6B"
+        text-anchor="middle"
+        letter-spacing="2">freqai.io</text>
+
+  <!-- Corner marks -->
+  <line x1="60" y1="60" x2="110" y2="60" stroke="#1E293B" stroke-width="1"/>
+  <line x1="60" y1="60" x2="60" y2="110" stroke="#1E293B" stroke-width="1"/>
+  <line x1="1140" y1="60" x2="1090" y2="60" stroke="#1E293B" stroke-width="1"/>
+  <line x1="1140" y1="60" x2="1140" y2="110" stroke="#1E293B" stroke-width="1"/>
+  <line x1="60" y1="570" x2="110" y2="570" stroke="#1E293B" stroke-width="1"/>
+  <line x1="60" y1="570" x2="60" y2="520" stroke="#1E293B" stroke-width="1"/>
+  <line x1="1140" y1="570" x2="1090" y2="570" stroke="#1E293B" stroke-width="1"/>
+  <line x1="1140" y1="570" x2="1140" y2="520" stroke="#1E293B" stroke-width="1"/>
+</svg>

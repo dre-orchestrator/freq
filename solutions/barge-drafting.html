@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Autonomous Barge Draft Measurement | FREQ AI</title>
+  <meta name="description" content="FREQ AI transforms the manual 4-hour barge drafting process into a 10–15 minute autonomous operation with sub-inch accuracy and zero crew exposure.">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="Autonomous Barge Draft Measurement | FREQ AI">
+  <meta property="og:description" content="The most fundamental operation in inland waterway logistics — transformed.">
+  <meta property="og:image" content="/public/og-image.svg">
+  <meta property="og:url" content="https://freqai.io/solutions/barge-drafting">
+  <link rel="icon" href="/public/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav class="nav" role="navigation" aria-label="Main navigation">
+  <div class="nav-inner">
+    <a href="/" class="nav-brand" aria-label="FREQ AI home">FREQ AI</a>
+    <ul class="nav-links" role="list">
+      <li><a href="/platform">Platform</a></li>
+      <li><a href="/solutions/barge-drafting" class="active">Solutions</a></li>
+      <li><a href="/about">About</a></li>
+      <li><a href="/team">Team</a></li>
+      <li><a href="/contact">Contact</a></li>
+      <li><a href="/contact" class="nav-cta">Get Started</a></li>
+    </ul>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle mobile menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="nav-mobile" id="nav-mobile" role="menu">
+    <a href="/platform" role="menuitem">Platform</a>
+    <a href="/solutions/barge-drafting" class="active" role="menuitem">Solutions</a>
+    <a href="/about" role="menuitem">About</a>
+    <a href="/team" role="menuitem">Team</a>
+    <a href="/contact" role="menuitem">Contact</a>
+    <a href="/contact" role="menuitem">Get Started</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="page-hero" aria-labelledby="bd-hero-heading">
+  <div class="container">
+    <span class="label">Solutions</span>
+    <h1 id="bd-hero-heading">Autonomous Barge Draft Measurement</h1>
+    <p>The most fundamental operation in inland waterway logistics — transformed.</p>
+  </div>
+</section>
+
+<!-- THE PROBLEM -->
+<section class="section" aria-labelledby="bd-problem-heading">
+  <div class="container">
+    <div class="section-header">
+      <span class="label">The Challenge</span>
+      <h2 id="bd-problem-heading">How Barge Drafting Works Today</h2>
+    </div>
+    <div style="max-width:70ch;">
+      <p style="margin-bottom:1.25rem;">
+        <span class="tooltip-wrap"><span class="tooltip-term">Barge drafting</span><span class="tooltip-box">The process of measuring how deep a loaded barge sits in the water to determine cargo weight.</span></span>
+        — the process of measuring how deep a loaded barge sits in the water to determine cargo weight — is performed manually on virtually every vessel in the US inland waterway system. The process has remained largely unchanged for decades.
+      </p>
+      <p style="margin-bottom:1.25rem;">
+        A typical manual drafting sequence requires a crew member to walk the barge deck to each
+        <span class="tooltip-wrap"><span class="tooltip-term">draft mark</span><span class="tooltip-box">Measurements painted on hull for manual visual reading.</span></span>
+        location, visually read painted marks on the hull at the waterline, relay readings by radio to a shore-based operator, repeat the process at multiple measurement points along the vessel, and compile all readings into a
+        <span class="tooltip-wrap"><span class="tooltip-term">draft survey</span><span class="tooltip-box">Formal process of calculating cargo weight from draft measurements.</span></span>
+        report.
+      </p>
+      <p>
+        This process takes approximately 4 hours per barge, requires crew presence on deck in active operational zones, introduces 1–3% measurement error from visual reading and manual recording, and produces paper-based documentation with limited traceability.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- RISKS -->
+<section class="section bg-secondary" aria-labelledby="risk-heading">
+  <div class="container">
+    <div class="section-header">
+      <span class="label">The Cost of Manual Operations</span>
+      <h2 id="risk-heading">Three Vectors of Operational Risk</h2>
+    </div>
+    <div class="card-grid card-grid-3" role="list">
+      <div class="card" role="listitem" style="border-left:3px solid var(--red);">
+        <h3 style="font-size:1rem;color:var(--red);margin-bottom:0.75rem;">Safety</h3>
+        <p style="font-size:0.875rem;">
+          <span class="tooltip-wrap"><span class="tooltip-term">Man overboard</span><span class="tooltip-box">Maritime emergency. Top non-navigational fatality cause.</span></span>
+          is the highest non-navigational cause of fatality in maritime. Every manual drafting operation puts crew members on exposed decks alongside active crane and loading equipment.
+        </p>
+      </div>
+      <div class="card" role="listitem" style="border-left:3px solid var(--amber);">
+        <h3 style="font-size:1rem;color:var(--amber);margin-bottom:0.75rem;">Accuracy</h3>
+        <p style="font-size:0.875rem;">A 1–3% measurement discrepancy on a 1,500-ton barge represents 15–45 tons of unaccounted cargo — real revenue loss on every load.</p>
+      </div>
+      <div class="card" role="listitem" style="border-left:3px solid var(--teal);">
+        <h3 style="font-size:1rem;color:var(--teal);margin-bottom:0.75rem;">Time</h3>
+        <p style="font-size:0.875rem;">4 hours per barge creates bottlenecks across the entire supply chain. Demurrage charges accumulate. Fleet utilization drops.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BEFORE / AFTER -->
+<section class="section" aria-labelledby="comparison-heading">
+  <div class="container">
+    <div class="section-header">
+      <span class="label">Before and After</span>
+      <h2 id="comparison-heading">The Transformation</h2>
+    </div>
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+      <table class="comparison-table" role="table">
+        <thead>
+          <tr>
+            <th scope="col">BEFORE — Manual Process</th>
+            <th scope="col">AFTER — FREQ AI Autonomous</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>4-hour process</td>
+            <td>10–15 minute process</td>
+          </tr>
+          <tr>
+            <td>Crew on deck required</td>
+            <td>Zero crew exposure</td>
+          </tr>
+          <tr>
+            <td>Visual gauge reading</td>
+            <td>Autonomous measurement</td>
+          </tr>
+          <tr>
+            <td>Radio relay</td>
+            <td>Real-time digital output</td>
+          </tr>
+          <tr>
+            <td>Paper documentation</td>
+            <td>Complete digital audit trail</td>
+          </tr>
+          <tr>
+            <td>1–3% error rate</td>
+            <td>Sub-inch accuracy</td>
+          </tr>
+          <tr>
+            <td>Man-overboard risk throughout</td>
+            <td>Safety risk eliminated</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- 6-PHASE SEQUENCE -->
+<section class="section bg-secondary" aria-labelledby="phases-heading">
+  <div class="container">
+    <div class="section-header">
+      <span class="label">Autonomous Sequence</span>
+      <h2 id="phases-heading">Six Phases from Vessel Approach to Verified Report</h2>
+    </div>
+    <div class="phase-list" role="list">
+      <div class="phase-item" role="listitem">
+        <div class="phase-num">01</div>
+        <div class="phase-content">
+          <h4>Initial Survey</h4>
+          <p>Vessel ID and baseline condition assessment. Operational zone established.</p>
+        </div>
+      </div>
+      <div class="phase-item" role="listitem">
+        <div class="phase-num">02</div>
+        <div class="phase-content">
+          <h4>Pre-Load Assessment</h4>
+          <p>Empty vessel readings at all stations. Loading parameters confirmed.</p>
+        </div>
+      </div>
+      <div class="phase-item" role="listitem">
+        <div class="phase-num">03</div>
+        <div class="phase-content">
+          <h4>Active Loading</h4>
+          <p>Real-time monitoring during loading. Continuous
+            <span class="tooltip-wrap"><span class="tooltip-term">draft</span><span class="tooltip-box">How deep the barge sits in the water. Increases as cargo loads.</span></span>
+            and stability tracking.
+          </p>
+        </div>
+      </div>
+      <div class="phase-item" role="listitem">
+        <div class="phase-num">04</div>
+        <div class="phase-content">
+          <h4>Cargo Verification</h4>
+          <p>Progressive verification against target parameters. Deviation alerts.</p>
+        </div>
+      </div>
+      <div class="phase-item" role="listitem">
+        <div class="phase-num">05</div>
+        <div class="phase-content">
+          <h4>Post-Load Assessment</h4>
+          <p>Final readings locked. Stability analysis complete.
+            <span class="tooltip-wrap"><span class="tooltip-term">Trim</span><span class="tooltip-box">Fore-to-aft balance. Zero trim = level keel.</span></span>
+            verified.
+          </p>
+        </div>
+      </div>
+      <div class="phase-item" role="listitem">
+        <div class="phase-num">06</div>
+        <div class="phase-content">
+          <h4>Final Survey &amp; Report</h4>
+          <p>Complete draft survey generated. All documentation compiled and logged.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GLOSSARY -->
+<section class="section" aria-labelledby="glossary-heading">
+  <div class="container">
+    <div class="section-header">
+      <span class="label">Reference</span>
+      <h2 id="glossary-heading">Maritime Terminology</h2>
+    </div>
+    <div class="accordion" role="list">
+      <div class="accordion-item" role="listitem">
+        <button class="accordion-trigger" aria-expanded="false">
+          <span class="accordion-term">Barge Draft</span>
+          <span class="accordion-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="accordion-content">Vertical distance from waterline to lowest point of hull.</div>
+      </div>
+      <div class="accordion-item" role="listitem">
+        <button class="accordion-trigger" aria-expanded="false">
+          <span class="accordion-term">Draft Survey</span>
+          <span class="accordion-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="accordion-content">Formal process of calculating cargo weight from draft measurements.</div>
+      </div>
+      <div class="accordion-item" role="listitem">
+        <button class="accordion-trigger" aria-expanded="false">
+          <span class="accordion-term">Trim</span>
+          <span class="accordion-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="accordion-content">Longitudinal (fore-to-aft) balance. Zero trim = level keel.</div>
+      </div>
+      <div class="accordion-item" role="listitem">
+        <button class="accordion-trigger" aria-expanded="false">
+          <span class="accordion-term">Heel</span>
+          <span class="accordion-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="accordion-content">Transverse (port-to-starboard) tilt from asymmetric loading.</div>
+      </div>
+      <div class="accordion-item" role="listitem">
+        <button class="accordion-trigger" aria-expanded="false">
+          <span class="accordion-term">Freeboard</span>
+          <span class="accordion-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="accordion-content">Distance from waterline to deck. Decreases as loading increases.</div>
+      </div>
+      <div class="accordion-item" role="listitem">
+        <button class="accordion-trigger" aria-expanded="false">
+          <span class="accordion-term">Displacement</span>
+          <span class="accordion-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="accordion-content">Weight of water displaced = total weight of vessel + cargo (Archimedes' principle).</div>
+      </div>
+      <div class="accordion-item" role="listitem">
+        <button class="accordion-trigger" aria-expanded="false">
+          <span class="accordion-term">Metacentric Height (GM)</span>
+          <span class="accordion-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="accordion-content">Measure of initial stability. Higher GM = more stable vessel.</div>
+      </div>
+      <div class="accordion-item" role="listitem">
+        <button class="accordion-trigger" aria-expanded="false">
+          <span class="accordion-term">Man Overboard (MOB)</span>
+          <span class="accordion-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="accordion-content">Maritime emergency. Leading non-navigational fatality cause in commercial maritime operations.</div>
+      </div>
+      <div class="accordion-item" role="listitem">
+        <button class="accordion-trigger" aria-expanded="false">
+          <span class="accordion-term">Draft Marks</span>
+          <span class="accordion-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="accordion-content">Measurements painted on hull for manual visual reading at the waterline.</div>
+      </div>
+      <div class="accordion-item" role="listitem">
+        <button class="accordion-trigger" aria-expanded="false">
+          <span class="accordion-term">Inland Waterway</span>
+          <span class="accordion-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="accordion-content">Navigable rivers, lakes, canals used for commercial cargo transport. The US system spans over 12,000 miles.</div>
+      </div>
+      <div class="accordion-item" role="listitem">
+        <button class="accordion-trigger" aria-expanded="false">
+          <span class="accordion-term">USCG 46 CFR</span>
+          <span class="accordion-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="accordion-content">US Coast Guard regulations governing commercial vessel operations, safety equipment, and inspection requirements.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" aria-labelledby="bd-cta-heading">
+  <div class="container">
+    <h2 id="bd-cta-heading">See how FREQ AI can transform your drafting operations.</h2>
+    <p>Connect with our team to discuss your specific operational requirements.</p>
+    <div class="cta-buttons">
+      <a href="/contact" class="btn btn-primary">Contact Us</a>
+      <a href="/platform" class="btn btn-outline">See the Platform</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">FREQ AI</div>
+        <div class="footer-tagline">Autonomous Maritime Intelligence</div>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <ul role="list">
+          <li><a href="/platform">Platform</a></li>
+          <li><a href="/solutions/barge-drafting">Barge Drafting</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul role="list">
+          <li><a href="/about">About</a></li>
+          <li><a href="/team">Team</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Connect</h4>
+        <ul role="list">
+          <li><a href="mailto:info@freqai.io">info@freqai.io</a></li>
+          <li><a href="https://linkedin.com/in/andry-alvarez" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+          <li><span style="color:var(--text-muted)">Slidell, LA</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 FREQ AI. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="/simulation.js"></script>
+</body>
+</html>
