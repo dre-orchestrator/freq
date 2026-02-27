@@ -92,16 +92,29 @@ jobs:
       run: |
         docker-compose config
 
-  deploy:
-    name: Deploy to Production
+  deploy-preview:
+    name: Deploy Preview to Vercel
     runs-on: ubuntu-latest
-    needs: [backend-test, frontend-test, docker-build]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    
+    if: github.event_name == 'pull_request'
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Deploy notification
-      run: |
-        echo "Deployment would happen here"
-        echo "Configure your deployment pipeline as needed"
+    - name: Deploy preview
+      run: npx vercel --token=${{ secrets.VERCEL_TOKEN }} --yes 2>&1
+      env:
+        VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+        VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+  deploy:
+    name: Deploy to Production (Vercel)
+    runs-on: ubuntu-latest
+    needs: [backend-test, frontend-test]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Deploy to Vercel production
+      run: npx vercel --prod --token=${{ secrets.VERCEL_TOKEN }} --yes 2>&1
+      env:
+        VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+        VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
