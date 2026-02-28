@@ -307,3 +307,102 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 0.9rem;
   line-height: 1.5;
 }
+
+/* Camera Toolbar */
+.camera-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.65rem 1rem;
+  background: #0A0F1E;
+  border: 1px solid var(--border);
+  border-top: none;
+  flex-wrap: wrap;
+}
+.camera-toolbar-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  margin-right: 0.4rem;
+}
+.cam-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.35rem;
+  cursor: pointer;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.cam-btn:hover {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border-color: var(--purple);
+}
+.cam-btn.active {
+  background: var(--bg-card);
+  border-color: var(--purple);
+  color: var(--text-primary);
+}
+.cam-btn-fp {
+  border-color: var(--purple);
+  color: #C4B5FD;
+}
+.cam-btn-fp:hover,
+.cam-btn-fp.active {
+  background: rgba(124,58,237,0.15);
+  border-color: var(--purple);
+  color: #DDD6FE;
+}
+.cam-btn-reset {
+  border-color: transparent;
+  color: var(--text-muted);
+  font-size: 0.68rem;
+}
+.cam-btn-reset:hover {
+  color: var(--text-secondary);
+}
+.active-cam-label {
+  margin-left: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--teal);
+  letter-spacing: 0.08em;
+}
+
+/* View shortcut pill buttons */
+.view-pill {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  cursor: pointer;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: border-color 0.2s, color 0.2s;
+}
+.view-pill:hover {
+  border-color: var(--purple);
+  color: var(--text-primary);
+}
+.view-pill--fp {
+  background: rgba(124,58,237,0.12);
+  border-color: var(--purple);
+  color: #C4B5FD;
+}
+.view-pill--fp:hover {
+  color: #DDD6FE;
+}

@@ -2,6 +2,9 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import Script from 'next/script'
+import { CameraController, STATION_IDS, STATION_LABELS } from '@/components/cameraController'
+import type { CameraState } from '@/components/cameraController'
+import CameraToolbar from '@/components/CameraToolbar'
 
 // ─── State Machine ───
 const SIM_STATES = {
@@ -101,6 +104,17 @@ export default function Simulation() {
   const [loadProgress, setLoadProgress] = useState(0)
   const [mobDetected, setMobDetected] = useState(false)
 
+  // Camera state
+  const [cameraView, setCameraView] = useState<string>('orbit')
+  const [activeStation, setActiveStation] = useState(-1)
+  const [fpActive, setFpActive] = useState(false)
+  const [showFPInstructions, setShowFPInstructions] = useState(false)
+  const [showStationCard, setShowStationCard] = useState(false)
+  const [nearbyStation, setNearbyStation] = useState(-1)
+  const [fpRegion, setFpRegion] = useState<'fore' | 'mid' | 'aft'>('mid')
+  const cameraControllerRef = useRef<CameraController | null>(null)
+  const simHasRunRef = useRef(false)
+
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const stateRef = useRef(state)
   const speedRef = useRef(speed)
@@ -146,76 +160,26 @@ export default function Simulation() {
       nearClip: 0.1,
       farClip: 200,
     })
-    camera.setPosition(30, 18, 30)
-    camera.lookAt(0, 0, 0)
+    camera.setPosition(0, 18, 42)
+    camera.lookAt(0, 1, 0)
     app.root.addChild(camera)
 
-    // Orbit camera script
-    if (!pc.script?.legacy) {
-      // Simple orbit via mouse drag
-      let isDragging = false
-      let lastX = 0, lastY = 0
-      let angleX = 30, angleY = 30
-      let distance = 42
+    // Camera Controller — manages 7 views, transitions, FP, station clicks
+    const camController = new CameraController(pc, camera, canvas, (camState: CameraState) => {
+      setCameraView(camState.activeView)
+      setActiveStation(camState.activeStationIndex)
+      setFpActive(camState.fpActive)
+      setShowFPInstructions(camState.fpActive && camState.activeView === 'fp')
+      setShowStationCard(camState.activeView === 'station' && camState.activeStationIndex >= 0)
+      setNearbyStation(camState.nearbyStationIndex)
+      setFpRegion(camState.firstPersonRegion)
+    })
+    cameraControllerRef.current = camController
+    pcEntitiesRef.current.resetCamera = () => camController.resetCamera()
 
-      const updateCam = () => {
-        const radX = angleX * Math.PI / 180
-        const radY = angleY * Math.PI / 180
-        const x = distance * Math.cos(radY) * Math.sin(radX)
-        const y = distance * Math.sin(radY)
-        const z = distance * Math.cos(radY) * Math.cos(radX)
-        camera.setPosition(x, Math.max(y, 3), z)
-        camera.lookAt(0, 0, 0)
-      }
-
-      canvas.addEventListener('mousedown', (e: MouseEvent) => { isDragging = true; lastX = e.clientX; lastY = e.clientY })
-      canvas.addEventListener('mouseup', () => { isDragging = false })
-      canvas.addEventListener('mouseleave', () => { isDragging = false })
-      canvas.addEventListener('mousemove', (e: MouseEvent) => {
-        if (!isDragging) return
-        angleX += (e.clientX - lastX) * 0.3
-        angleY = Math.max(-10, Math.min(80, angleY + (e.clientY - lastY) * 0.3))
-        lastX = e.clientX
-        lastY = e.clientY
-        updateCam()
-      })
-      canvas.addEventListener('wheel', (e: WheelEvent) => {
-        distance = Math.max(15, Math.min(80, distance + e.deltaY * 0.05))
-        updateCam()
-        e.preventDefault()
-      }, { passive: false })
-
-      // Touch support
-      let touchDist = 0
-      canvas.addEventListener('touchstart', (e: TouchEvent) => {
-        if (e.touches.length === 1) { isDragging = true; lastX = e.touches[0].clientX; lastY = e.touches[0].clientY }
-        if (e.touches.length === 2) {
-          const dx = e.touches[0].clientX - e.touches[1].clientX
-          const dy = e.touches[0].clientY - e.touches[1].clientY
-          touchDist = Math.sqrt(dx * dx + dy * dy)
-        }
-      })
-      canvas.addEventListener('touchmove', (e: TouchEvent) => {
-        if (e.touches.length === 1 && isDragging) {
-          angleX += (e.touches[0].clientX - lastX) * 0.3
-          angleY = Math.max(-10, Math.min(80, angleY + (e.touches[0].clientY - lastY) * 0.3))
-          lastX = e.touches[0].clientX
-          lastY = e.touches[0].clientY
-          updateCam()
-        }
-        if (e.touches.length === 2) {
-          const dx = e.touches[0].clientX - e.touches[1].clientX
-          const dy = e.touches[0].clientY - e.touches[1].clientY
-          const newDist = Math.sqrt(dx * dx + dy * dy)
-          distance = Math.max(15, Math.min(80, distance - (newDist - touchDist) * 0.1))
-          touchDist = newDist
-          updateCam()
-        }
-        e.preventDefault()
-      }, { passive: false })
-      canvas.addEventListener('touchend', () => { isDragging = false })
-
-      pcEntitiesRef.current.resetCamera = () => { angleX = 30; angleY = 30; distance = 42; updateCam() }
+    // Expose global for platform page view shortcut pills
+    ;(window as any).__freqSimSetView = (viewName: string) => {
+      camController.setView(viewName)
     }
 
     // Lighting
@@ -367,6 +331,8 @@ export default function Simulation() {
   useEffect(() => {
     return () => {
       if (tickRef.current) clearInterval(tickRef.current)
+      if (cameraControllerRef.current) cameraControllerRef.current.destroy()
+      delete (window as any).__freqSimSetView
       if (pcEntitiesRef.current.cleanup) pcEntitiesRef.current.cleanup()
       if (pcAppRef.current) {
         try { pcAppRef.current.destroy() } catch {}
@@ -516,6 +482,7 @@ export default function Simulation() {
 
   // ─── Controls ───
   const initiate = () => {
+    simHasRunRef.current = true
     setState(SIM_STATES.RUNNING)
     stateRef.current = SIM_STATES.RUNNING
     setCurrentPhase(0)
@@ -770,6 +737,17 @@ export default function Simulation() {
           </div>
         </div>
 
+        {/* Camera Toolbar */}
+        {view === '3d' && (
+          <CameraToolbar
+            activeView={cameraView}
+            activeStationIndex={activeStation}
+            onViewChange={(v) => cameraControllerRef.current?.setView(v)}
+            onCycleStation={() => cameraControllerRef.current?.cycleStation(1)}
+            onResetCamera={() => cameraControllerRef.current?.resetCamera()}
+          />
+        )}
+
         {/* Main content area */}
         <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
           {/* Left Panel — Manual Process */}
@@ -902,18 +880,120 @@ export default function Simulation() {
                 )}
               </div>
 
-              {/* Camera reset button */}
-              <button
-                onClick={() => pcEntitiesRef.current.resetCamera?.()}
-                style={{
-                  position: 'absolute', bottom: 12, right: 12, padding: '4px 10px',
-                  fontSize: '0.7rem', fontFamily: "'JetBrains Mono', monospace",
-                  background: 'rgba(8,12,24,0.85)', color: 'var(--text-secondary)',
-                  border: '1px solid var(--border)', borderRadius: 4, cursor: 'pointer', zIndex: 2,
-                }}
-              >
-                RESET VIEW
-              </button>
+              {/* First Person Instructions Overlay */}
+              {fpActive && !showStationCard && (
+                <div style={{
+                  display: 'flex', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+                  zIndex: 50, background: 'rgba(8,12,24,0.95)', border: '1px solid var(--purple)',
+                  borderRadius: '0.75rem', padding: '2rem', minWidth: 320, flexDirection: 'column', gap: '0.75rem',
+                  fontFamily: "'IBM Plex Sans', sans-serif",
+                }}>
+                  <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: '1rem', color: 'var(--purple)', letterSpacing: '0.08em', marginBottom: '0.5rem' }}>
+                    FIRST PERSON MODE
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: '0.4rem', fontSize: '0.875rem' }}>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", color: 'var(--teal)' }}>W / &uarr;</span>
+                    <span style={{ color: 'var(--text-secondary)' }}>Move forward</span>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", color: 'var(--teal)' }}>S / &darr;</span>
+                    <span style={{ color: 'var(--text-secondary)' }}>Move backward</span>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", color: 'var(--teal)' }}>A / &larr;</span>
+                    <span style={{ color: 'var(--text-secondary)' }}>Move left</span>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", color: 'var(--teal)' }}>D / &rarr;</span>
+                    <span style={{ color: 'var(--text-secondary)' }}>Move right</span>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", color: 'var(--teal)' }}>Mouse</span>
+                    <span style={{ color: 'var(--text-secondary)' }}>Look around</span>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", color: 'var(--teal)' }}>Click</span>
+                    <span style={{ color: 'var(--text-secondary)' }}>Inspect nearby station</span>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", color: 'var(--teal)' }}>ESC</span>
+                    <span style={{ color: 'var(--text-secondary)' }}>Exit first person</span>
+                  </div>
+                  <div style={{ marginTop: '0.5rem', padding: '0.75rem', background: 'var(--bg-secondary)', borderRadius: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.8rem', lineHeight: 1.5 }}>
+                    You are on the barge deck. Walk to each measurement station. This is what the manual process requires crew to do &mdash; in all weather, alongside active crane and loading equipment.
+                  </div>
+                  <button
+                    onClick={() => cameraControllerRef.current?.dismissFPInstructions()}
+                    style={{
+                      marginTop: '0.5rem', background: 'var(--purple)', color: '#fff', border: 'none',
+                      padding: '0.6rem 1.25rem', borderRadius: '0.4rem', cursor: 'pointer',
+                      fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, alignSelf: 'flex-end',
+                    }}
+                  >
+                    Got it &mdash; Enter Deck &rarr;
+                  </button>
+                </div>
+              )}
+
+              {/* First Person Context Narration */}
+              {fpActive && simHasRunRef.current && (
+                <div style={{
+                  position: 'absolute', bottom: '1.5rem', left: '1.5rem',
+                  fontFamily: "'JetBrains Mono', monospace", fontSize: '0.72rem',
+                  color: 'var(--text-muted)', maxWidth: 280, lineHeight: 1.5,
+                  pointerEvents: 'none', transition: 'opacity 0.6s', zIndex: 3,
+                }}>
+                  {fpRegion === 'fore' && 'FORE DRAFT STATION \u2014 Manual read: \u00B10.5 inch error'}
+                  {fpRegion === 'mid' && 'MIDSHIP STATION \u2014 Radio relay required to shore'}
+                  {fpRegion === 'aft' && 'AFT STATION \u2014 Third reading. Process takes 4 hours total.'}
+                </div>
+              )}
+
+              {/* First Person Station Proximity Tooltip */}
+              {fpActive && nearbyStation >= 0 && (
+                <div style={{
+                  position: 'absolute', bottom: '4rem', left: '50%', transform: 'translateX(-50%)',
+                  fontFamily: "'JetBrains Mono', monospace", fontSize: '0.75rem', color: 'var(--teal)',
+                  background: 'rgba(8,12,24,0.9)', border: '1px solid var(--teal)', borderRadius: '0.35rem',
+                  padding: '0.4rem 0.75rem', pointerEvents: 'none', zIndex: 3, whiteSpace: 'nowrap',
+                }}>
+                  DRAFT STATION: {STATION_IDS[nearbyStation]} &mdash; Click to inspect
+                </div>
+              )}
+
+              {/* Station Close-Up Data Card */}
+              {showStationCard && activeStation >= 0 && (
+                <div style={{
+                  position: 'absolute', bottom: '1.5rem', right: '1.5rem',
+                  background: 'rgba(8,12,24,0.95)', border: '1px solid var(--teal)',
+                  borderRadius: '0.75rem', padding: '1.25rem', minWidth: 240,
+                  fontFamily: "'JetBrains Mono', monospace", fontSize: '0.8rem', zIndex: 10,
+                }}>
+                  <div style={{ fontWeight: 700, color: 'var(--teal)', fontSize: '0.85rem', marginBottom: '0.75rem', letterSpacing: '0.08em' }}>
+                    DRAFT STATION &mdash; {STATION_LABELS[activeStation]}
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '0.35rem', marginBottom: '0.75rem' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>ID</span>
+                    <span style={{ color: 'var(--text-primary)' }}>{STATION_IDS[activeStation]}</span>
+                    <span style={{ color: 'var(--text-muted)' }}>READING</span>
+                    <span style={{ color: 'var(--teal)' }}>{readings[activeStation].toFixed(2)} ft</span>
+                    <span style={{ color: 'var(--text-muted)' }}>STATUS</span>
+                    <span style={{ color: 'var(--green)' }}>{'\u25B2'} NOMINAL</span>
+                    <span style={{ color: 'var(--text-muted)' }}>METHOD</span>
+                    <span style={{ color: 'var(--text-primary)' }}>AUTONOMOUS</span>
+                    <span style={{ color: 'var(--text-muted)' }}>ACCURACY</span>
+                    <span style={{ color: 'var(--green)' }}>&plusmn; 0.02 ft</span>
+                  </div>
+                  <div style={{ borderTop: '1px solid var(--border)', paddingTop: '0.75rem', marginBottom: '0.75rem', color: 'var(--text-muted)', fontSize: '0.72rem', lineHeight: 1.6 }}>
+                    Manual equivalent:<br />
+                    Visual read &plusmn;0.5 in | Radio relay to shore
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <button onClick={() => cameraControllerRef.current?.cycleStation(-1)} style={{
+                      background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-secondary)',
+                      padding: '0.3rem 0.5rem', borderRadius: '0.3rem', cursor: 'pointer',
+                      fontFamily: "'JetBrains Mono', monospace", fontSize: '0.7rem',
+                    }}>&larr; PREV</button>
+                    <button onClick={() => cameraControllerRef.current?.cycleStation(1)} style={{
+                      background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-secondary)',
+                      padding: '0.3rem 0.5rem', borderRadius: '0.3rem', cursor: 'pointer',
+                      fontFamily: "'JetBrains Mono', monospace", fontSize: '0.7rem',
+                    }}>NEXT &rarr;</button>
+                    <button onClick={() => cameraControllerRef.current?.setView('orbit')} style={{
+                      background: 'transparent', border: 'none', color: 'var(--text-muted)',
+                      padding: '0.3rem', cursor: 'pointer', fontSize: '0.8rem',
+                    }}>&times;</button>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Telemetry View */}
