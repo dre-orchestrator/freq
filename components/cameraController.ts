@@ -10,6 +10,7 @@ export interface CameraState {
   nearbyStationIndex: number
   firstPersonRegion: 'fore' | 'mid' | 'aft'
   fpActive: boolean
+  fpInstructionsDismissed: boolean
 }
 
 interface ViewDef {
@@ -227,12 +228,18 @@ export class CameraController {
 
   dismissFPInstructions() {
     this.fpInstructionsDismissed = true
+    this._emitState()
     // Request pointer lock
     try {
       this.canvas.requestPointerLock()
     } catch {
       // Pointer lock not available — fall back to drag-look
     }
+  }
+
+  clearStationInspection() {
+    this.activeStationIndex = -1
+    this._emitState()
   }
 
   resetCamera() {
@@ -255,6 +262,7 @@ export class CameraController {
       nearbyStationIndex: this.nearbyStationIndex,
       firstPersonRegion: this.firstPersonRegion,
       fpActive: this.activeView === 'fp',
+      fpInstructionsDismissed: this.fpInstructionsDismissed,
     }
   }
 
@@ -287,6 +295,7 @@ export class CameraController {
     this.pointerLocked = false
     this.fpInstructionsDismissed = false
     this.nearbyStationIndex = -1
+    this.activeStationIndex = -1
     if (returnToPrev) {
       const target = this.prevView === 'fp' ? 'orbit' : this.prevView
       this.activeView = target
@@ -675,6 +684,7 @@ export class CameraController {
       nearbyStationIndex: this.nearbyStationIndex,
       firstPersonRegion: this.firstPersonRegion,
       fpActive: this.activeView === 'fp',
+      fpInstructionsDismissed: this.fpInstructionsDismissed,
     })
   }
 }

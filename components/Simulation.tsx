@@ -169,8 +169,11 @@ export default function Simulation() {
       setCameraView(camState.activeView)
       setActiveStation(camState.activeStationIndex)
       setFpActive(camState.fpActive)
-      setShowFPInstructions(camState.fpActive && camState.activeView === 'fp')
-      setShowStationCard(camState.activeView === 'station' && camState.activeStationIndex >= 0)
+      setShowFPInstructions(camState.fpActive && !camState.fpInstructionsDismissed)
+      setShowStationCard(
+        (camState.activeView === 'station' && camState.activeStationIndex >= 0) ||
+        (camState.fpActive && camState.activeStationIndex >= 0)
+      )
       setNearbyStation(camState.nearbyStationIndex)
       setFpRegion(camState.firstPersonRegion)
     })
@@ -881,7 +884,7 @@ export default function Simulation() {
               </div>
 
               {/* First Person Instructions Overlay */}
-              {fpActive && !showStationCard && (
+              {showFPInstructions && !showStationCard && (
                 <div style={{
                   display: 'flex', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
                   zIndex: 50, background: 'rgba(8,12,24,0.95)', border: '1px solid var(--purple)',
@@ -924,7 +927,7 @@ export default function Simulation() {
               )}
 
               {/* First Person Context Narration */}
-              {fpActive && simHasRunRef.current && (
+              {fpActive && !showFPInstructions && simHasRunRef.current && (
                 <div style={{
                   position: 'absolute', bottom: '1.5rem', left: '1.5rem',
                   fontFamily: "'JetBrains Mono', monospace", fontSize: '0.72rem',
@@ -938,7 +941,7 @@ export default function Simulation() {
               )}
 
               {/* First Person Station Proximity Tooltip */}
-              {fpActive && nearbyStation >= 0 && (
+              {fpActive && !showFPInstructions && nearbyStation >= 0 && (
                 <div style={{
                   position: 'absolute', bottom: '4rem', left: '50%', transform: 'translateX(-50%)',
                   fontFamily: "'JetBrains Mono', monospace", fontSize: '0.75rem', color: 'var(--teal)',
@@ -977,19 +980,30 @@ export default function Simulation() {
                     Visual read &plusmn;0.5 in | Radio relay to shore
                   </div>
                   <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <button onClick={() => cameraControllerRef.current?.cycleStation(-1)} style={{
-                      background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-secondary)',
-                      padding: '0.3rem 0.5rem', borderRadius: '0.3rem', cursor: 'pointer',
-                      fontFamily: "'JetBrains Mono', monospace", fontSize: '0.7rem',
-                    }}>&larr; PREV</button>
-                    <button onClick={() => cameraControllerRef.current?.cycleStation(1)} style={{
-                      background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-secondary)',
-                      padding: '0.3rem 0.5rem', borderRadius: '0.3rem', cursor: 'pointer',
-                      fontFamily: "'JetBrains Mono', monospace", fontSize: '0.7rem',
-                    }}>NEXT &rarr;</button>
-                    <button onClick={() => cameraControllerRef.current?.setView('orbit')} style={{
+                    {!fpActive && (
+                      <>
+                        <button onClick={() => cameraControllerRef.current?.cycleStation(-1)} style={{
+                          background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-secondary)',
+                          padding: '0.3rem 0.5rem', borderRadius: '0.3rem', cursor: 'pointer',
+                          fontFamily: "'JetBrains Mono', monospace", fontSize: '0.7rem',
+                        }}>&larr; PREV</button>
+                        <button onClick={() => cameraControllerRef.current?.cycleStation(1)} style={{
+                          background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-secondary)',
+                          padding: '0.3rem 0.5rem', borderRadius: '0.3rem', cursor: 'pointer',
+                          fontFamily: "'JetBrains Mono', monospace", fontSize: '0.7rem',
+                        }}>NEXT &rarr;</button>
+                      </>
+                    )}
+                    <button onClick={() => {
+                      if (fpActive) {
+                        cameraControllerRef.current?.clearStationInspection()
+                      } else {
+                        cameraControllerRef.current?.setView('orbit')
+                      }
+                    }} style={{
                       background: 'transparent', border: 'none', color: 'var(--text-muted)',
                       padding: '0.3rem', cursor: 'pointer', fontSize: '0.8rem',
+                      marginLeft: fpActive ? 'auto' : undefined,
                     }}>&times;</button>
                   </div>
                 </div>
