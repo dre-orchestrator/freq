@@ -4,20 +4,78 @@ import { useEffect, useRef, useState } from 'react'
 import Script from 'next/script'
 import Link from 'next/link'
 
-const capabilities = [
-  { num: '01', title: 'Autonomous Measurement', desc: 'Precision cargo draft readings without manual intervention.' },
-  { num: '02', title: 'Real-Time Monitoring', desc: 'Continuous visibility into cargo status and vessel stability.' },
-  { num: '03', title: 'Safety Governance', desc: 'Integrated hazard detection. Man-overboard risk eliminated.' },
-  { num: '04', title: 'Compliance & Reporting', desc: 'Automated draft surveys and regulatory documentation.' },
-  { num: '05', title: 'Hardware Agnostic', desc: 'Radar, LiDAR, pressure, drone, or visual — any input.' },
-  { num: '06', title: 'Fleet Scale', desc: 'Single vessel to enterprise fleet management.' },
+const operationalSteps = [
+  {
+    num: '01',
+    title: 'LiDAR Scanning',
+    desc: 'Fixed or drone-mounted LiDAR sensors emit rapid laser pulses to map the barge\'s exact position relative to the water surface.',
+  },
+  {
+    num: '02',
+    title: 'Point Cloud Generation',
+    desc: 'AI algorithms process laser pulses to create a high-density point cloud, capturing the barge\'s dimensions and current waterline.',
+  },
+  {
+    num: '03',
+    title: 'Digital Twin Synchronization',
+    desc: 'Data feeds into a Digital Twin — a virtual 3D model of the specific barge — automatically accounting for yaw, pitch, and roll.',
+  },
+  {
+    num: '04',
+    title: 'Automated Calculation',
+    desc: 'AI integrates real-time draft measurements with hydrostatic tables to calculate current tonnage and loading flow rates instantly.',
+  },
 ]
 
-const useCases = [
-  { title: 'Barge Draft Measurement', desc: '10-15 min autonomous cycle, zero crew exposure.', link: '/solutions/barge-drafting', linkText: 'View Solution' },
-  { title: 'Cargo Load Optimization', desc: 'Precision loading for maximum revenue per trip.', link: null, linkText: null },
-  { title: 'Safety Monitoring', desc: 'Continuous zone monitoring with automatic hazard detection.', link: null, linkText: null },
-  { title: 'Fleet Intelligence', desc: 'Real-time visibility across your entire barge fleet.', link: null, linkText: null },
+const productionOutcomes = [
+  {
+    value: 'Seconds',
+    title: 'Time Optimization',
+    desc: 'Measurements taken in seconds and updated continuously during loading/unloading, significantly reducing vessel turnaround time.',
+  },
+  {
+    value: 'Zero',
+    title: 'Reduced Man-Risk',
+    desc: 'Eliminates the need for surveyors to climb onto barges or use swinging ladders to read draft marks — removing fall and water-related accident risk entirely.',
+  },
+  {
+    value: '½ Inch',
+    title: 'Minimized Human Error',
+    desc: 'AI eliminates manual mistakes such as misreading hull marks in choppy water or recording incorrect data, ensuring accuracy within half an inch.',
+  },
+]
+
+const aiImprovements = [
+  {
+    title: 'Predictive Maintenance',
+    desc: 'Analyzing sensor data (vibration, temperature) to forecast equipment failure before it happens, reducing unplanned downtime by up to 45%.',
+    stat: '45%',
+    statLabel: 'Downtime reduction',
+  },
+  {
+    title: 'Dynamic Route Optimization',
+    desc: 'AI suggests the most fuel-efficient routes by processing real-time weather, currents, and port congestion data.',
+    stat: '20%',
+    statLabel: 'Shipping cost reduction',
+  },
+  {
+    title: 'Smart Port & Cargo Handling',
+    desc: 'AI-powered automated cranes and guided vehicles (AGVs) streamline container movement, reducing bottlenecks and idle times.',
+    stat: null,
+    statLabel: null,
+  },
+  {
+    title: 'Hazardous Cargo Monitoring',
+    desc: 'Real-time AI surveillance detects temperature or pressure anomalies in dangerous goods containers, triggering immediate alerts.',
+    stat: null,
+    statLabel: null,
+  },
+  {
+    title: 'Automated Inspections',
+    desc: 'Drones with AI image recognition inspect hulls and cargo holds for rust or cracks in areas inaccessible to humans safely.',
+    stat: null,
+    statLabel: null,
+  },
 ]
 
 const heroStats = [
@@ -31,17 +89,15 @@ export default function PlayCanvasPlatform() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const pcAppRef = useRef<any>(null)
   const [pcLoaded, setPcLoaded] = useState(false)
-  const [activeCapability, setActiveCapability] = useState(0)
+  const [activeStep, setActiveStep] = useState(0)
 
-  // Cycle through capabilities to highlight them
   useEffect(() => {
     const id = setInterval(() => {
-      setActiveCapability(prev => (prev + 1) % capabilities.length)
-    }, 2800)
+      setActiveStep(prev => (prev + 1) % operationalSteps.length)
+    }, 3000)
     return () => clearInterval(id)
   }, [])
 
-  // Build PlayCanvas scene once engine is ready
   useEffect(() => {
     if (!pcLoaded || !canvasRef.current) return
 
@@ -105,7 +161,7 @@ export default function PlayCanvasPlatform() {
       rimLight.setPosition(-20, 5, -15)
       app.root.addChild(rimLight)
 
-      // ── WATER PLANE ──────────────────────────────────────────────────────────
+      // ── WATER ────────────────────────────────────────────────────────────────
       const waterMat = new pc.StandardMaterial()
       waterMat.diffuse = new pc.Color(0.01, 0.1, 0.2)
       waterMat.emissive = new pc.Color(0.0, 0.04, 0.09)
@@ -131,7 +187,6 @@ export default function PlayCanvasPlatform() {
       barge.setPosition(0, -0.9, 0)
       app.root.addChild(barge)
 
-      // Barge deck
       const deckMat = new pc.StandardMaterial()
       deckMat.diffuse = new pc.Color(0.12, 0.18, 0.28)
       deckMat.emissive = new pc.Color(0.02, 0.03, 0.05)
@@ -143,7 +198,7 @@ export default function PlayCanvasPlatform() {
       deck.setPosition(0, 1.1, 0)
       app.root.addChild(deck)
 
-      // ── DECK GRID LINES ──────────────────────────────────────────────────────
+      // ── DECK GRID (blueprint) ────────────────────────────────────────────────
       const gridMat = new pc.StandardMaterial()
       gridMat.diffuse = new pc.Color(0.0, 0.4, 0.5)
       gridMat.emissive = new pc.Color(0.0, 0.25, 0.3)
@@ -151,7 +206,6 @@ export default function PlayCanvasPlatform() {
       gridMat.blendType = pc.BLEND_NORMAL
       gridMat.update()
 
-      // Longitudinal lines
       for (let z = -4; z <= 4; z += 2) {
         const ln = new pc.Entity()
         ln.addComponent('render', { type: 'box', material: gridMat })
@@ -159,7 +213,6 @@ export default function PlayCanvasPlatform() {
         ln.setPosition(0, 1.22, z)
         app.root.addChild(ln)
       }
-      // Cross lines
       for (let x = -10; x <= 10; x += 5) {
         const ln = new pc.Entity()
         ln.addComponent('render', { type: 'box', material: gridMat })
@@ -168,7 +221,7 @@ export default function PlayCanvasPlatform() {
         app.root.addChild(ln)
       }
 
-      // ── DRAFT MEASUREMENT STATIONS ───────────────────────────────────────────
+      // ── LIDAR SCAN STATIONS (6) ──────────────────────────────────────────────
       const stationDefs = [
         { x: -9, z: -3.5 }, { x: -9, z: 3.5 },
         { x:  0, z: -3.5 }, { x:  0, z: 3.5 },
@@ -176,18 +229,12 @@ export default function PlayCanvasPlatform() {
       ]
 
       interface ScannerEntry {
-        beam: any
-        beamMat: any
-        markerMat: any
-        x: number
-        z: number
-        phase: number
+        beam: any; beamMat: any; markerMat: any; x: number; z: number; phase: number
       }
 
       const scanners: ScannerEntry[] = stationDefs.map(({ x, z }, i) => {
         const phase = (i / stationDefs.length) * Math.PI * 2
 
-        // Marker sphere
         const mMat = new pc.StandardMaterial()
         mMat.diffuse = new pc.Color(0.0, 0.85, 0.75)
         mMat.emissive = new pc.Color(0.0, 0.55, 0.48)
@@ -200,7 +247,6 @@ export default function PlayCanvasPlatform() {
         marker.setPosition(x, 1.26, z)
         app.root.addChild(marker)
 
-        // Scan beam
         const bMat = new pc.StandardMaterial()
         bMat.diffuse = new pc.Color(0.0, 0.7, 0.85)
         bMat.emissive = new pc.Color(0.0, 0.5, 0.65)
@@ -218,7 +264,7 @@ export default function PlayCanvasPlatform() {
         return { beam, beamMat: bMat, markerMat: mMat, x, z, phase }
       })
 
-      // ── DATA PARTICLES ───────────────────────────────────────────────────────
+      // ── POINT CLOUD PARTICLES ────────────────────────────────────────────────
       const pMat = new pc.StandardMaterial()
       pMat.diffuse = new pc.Color(0.0, 1.0, 0.9)
       pMat.emissive = new pc.Color(0.0, 0.8, 0.72)
@@ -226,7 +272,7 @@ export default function PlayCanvasPlatform() {
       pMat.update()
 
       interface ParticleEntry { entity: any; x: number; z: number; y: number; speed: number }
-      const particles: ParticleEntry[] = Array.from({ length: 40 }, (_, i) => {
+      const particles: ParticleEntry[] = Array.from({ length: 40 }, () => {
         const x = (Math.random() - 0.5) * 22
         const z = (Math.random() - 0.5) * 9
         const y = Math.random() * 14
@@ -238,7 +284,7 @@ export default function PlayCanvasPlatform() {
         return { entity: e, x, z, y, speed: 0.6 + Math.random() * 1.8 }
       })
 
-      // ── HORIZON FOG PLANES ───────────────────────────────────────────────────
+      // ── HORIZON PLANES ───────────────────────────────────────────────────────
       const fogMat = new pc.StandardMaterial()
       fogMat.diffuse = new pc.Color(0.01, 0.05, 0.12)
       fogMat.emissive = new pc.Color(0.0, 0.03, 0.07)
@@ -246,17 +292,16 @@ export default function PlayCanvasPlatform() {
       fogMat.blendType = pc.BLEND_NORMAL
       fogMat.update()
 
-      const horizonDefs = [
-        { pos: [0, 0, -70], rot: [0, 0, 0], scale: [160, 30, 1] },
-        { pos: [0, 0, 70],  rot: [0, 180, 0], scale: [160, 30, 1] },
-        { pos: [-70, 0, 0], rot: [0, 90, 0],  scale: [160, 30, 1] },
-        { pos: [70, 0, 0],  rot: [0, -90, 0], scale: [160, 30, 1] },
-      ]
-      horizonDefs.forEach(({ pos, rot, scale }) => {
+      ;[
+        { pos: [0, 0, -70], rotY: 0 },
+        { pos: [0, 0, 70],  rotY: 180 },
+        { pos: [-70, 0, 0], rotY: 90 },
+        { pos: [70, 0, 0],  rotY: -90 },
+      ].forEach(({ pos, rotY }) => {
         const h = new pc.Entity()
         h.addComponent('render', { type: 'plane', material: fogMat })
-        h.setEulerAngles(90, rot[1], 0)
-        h.setLocalScale(scale[0], 1, scale[2])
+        h.setEulerAngles(90, rotY, 0)
+        h.setLocalScale(160, 1, 1)
         h.setPosition(pos[0], pos[1], pos[2])
         app.root.addChild(h)
       })
@@ -268,31 +313,20 @@ export default function PlayCanvasPlatform() {
       app.on('update', (dt: number) => {
         time += dt
 
-        // Slow camera orbit
         cameraAngle += dt * 0.1
         const radius = 38
-        const cx = Math.cos(cameraAngle) * radius
-        const cz = Math.sin(cameraAngle) * radius
-        const cy = 13 + Math.sin(time * 0.22) * 2.5
-        camera.setPosition(cx, cy, cz)
+        camera.setPosition(
+          Math.cos(cameraAngle) * radius,
+          13 + Math.sin(time * 0.22) * 2.5,
+          Math.sin(cameraAngle) * radius
+        )
         camera.lookAt(new pc.Vec3(0, 1.5, 0))
 
-        // Barge gentle rock
-        barge.setEulerAngles(
-          Math.cos(time * 0.28) * 0.6,
-          0,
-          Math.sin(time * 0.38) * 0.9
-        )
-        deck.setEulerAngles(
-          Math.cos(time * 0.28) * 0.6,
-          0,
-          Math.sin(time * 0.38) * 0.9
-        )
+        barge.setEulerAngles(Math.cos(time * 0.28) * 0.6, 0, Math.sin(time * 0.38) * 0.9)
+        deck.setEulerAngles(Math.cos(time * 0.28) * 0.6, 0, Math.sin(time * 0.38) * 0.9)
 
-        // Teal light heartbeat
         tealLight.light.intensity = 2.5 + Math.sin(time * 1.8) * 0.7
 
-        // Scanner beam pulse
         scanners.forEach(s => {
           const phase = time * 1.8 + s.phase
           const beamH = 5 + Math.sin(phase) * 3.5
@@ -300,19 +334,16 @@ export default function PlayCanvasPlatform() {
           s.beam.setPosition(s.x, 1.26 + beamH / 2, s.z)
           s.beamMat.opacity = 0.12 + Math.abs(Math.sin(phase)) * 0.38
           s.beamMat.update()
-          // Marker glow pulse
           s.markerMat.emissiveIntensity = 2.5 + Math.abs(Math.sin(phase + 0.5)) * 3
           s.markerMat.update()
         })
 
-        // Particles float up
         particles.forEach(p => {
           p.y += dt * p.speed
           if (p.y > 16) p.y = 0.8
           p.entity.setPosition(p.x, p.y, p.z)
         })
 
-        // Water shimmer
         waterMat.emissive = new pc.Color(
           0.0,
           0.035 + Math.sin(time * 0.6) * 0.015,
@@ -333,7 +364,6 @@ export default function PlayCanvasPlatform() {
     }
   }, [pcLoaded])
 
-  // Canvas resize
   useEffect(() => {
     const onResize = () => pcAppRef.current?.resizeCanvas()
     window.addEventListener('resize', onResize)
@@ -348,7 +378,7 @@ export default function PlayCanvasPlatform() {
         onLoad={() => setPcLoaded(true)}
       />
 
-      {/* ── HERO: Full-viewport PlayCanvas canvas ── */}
+      {/* ── HERO: Full-viewport PlayCanvas Scene ── */}
       <section style={{
         position: 'relative',
         width: '100%',
@@ -363,7 +393,7 @@ export default function PlayCanvasPlatform() {
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
         />
 
-        {/* Left content overlay */}
+        {/* Left overlay */}
         <div style={{
           position: 'absolute',
           inset: 0,
@@ -371,7 +401,7 @@ export default function PlayCanvasPlatform() {
           flexDirection: 'column',
           justifyContent: 'center',
           padding: '0 clamp(24px, 8vw, 100px)',
-          background: 'linear-gradient(to right, rgba(7,11,24,0.9) 38%, rgba(7,11,24,0.4) 65%, transparent 85%)',
+          background: 'linear-gradient(to right, rgba(7,11,24,0.92) 40%, rgba(7,11,24,0.4) 65%, transparent 85%)',
           pointerEvents: 'none',
         }}>
           <div style={{
@@ -383,7 +413,7 @@ export default function PlayCanvasPlatform() {
             marginBottom: 18,
             opacity: 0.9,
           }}>
-            FREQ AI · Maritime Intelligence Platform
+            FREQ AI · Autonomous Barge Drafting with AI &amp; LiDAR
           </div>
 
           <h1 style={{
@@ -395,18 +425,18 @@ export default function PlayCanvasPlatform() {
             color: '#fff',
             fontFamily: "'Space Grotesk', sans-serif",
           }}>
-            The Intelligence Layer for Maritime Cargo Operations
+            Optimizing Barge Drafting with AI &amp; LiDAR
           </h1>
 
           <p style={{
             fontSize: '1.02rem',
             color: '#94A3B8',
-            maxWidth: 480,
+            maxWidth: 500,
             lineHeight: 1.72,
             marginBottom: 38,
           }}>
-            Hardware-agnostic AI that transforms raw sensor data into autonomous
-            drafting, real-time monitoring, and verified compliance — in 15 minutes.
+            High-frequency laser scanning and AI replace visual inspection of hull marks —
+            delivering continuous, sub-inch draft measurements with zero crew exposure.
           </p>
 
           <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', pointerEvents: 'auto' }}>
@@ -415,7 +445,7 @@ export default function PlayCanvasPlatform() {
           </div>
         </div>
 
-        {/* Bottom stat strip */}
+        {/* Stats strip */}
         <div style={{
           position: 'absolute',
           bottom: 44,
@@ -426,10 +456,7 @@ export default function PlayCanvasPlatform() {
           pointerEvents: 'none',
         }}>
           {heroStats.map(s => (
-            <div key={s.value} style={{
-              borderLeft: '2px solid #06B6D4',
-              paddingLeft: 12,
-            }}>
+            <div key={s.value} style={{ borderLeft: '2px solid #06B6D4', paddingLeft: 12 }}>
               <div style={{
                 fontFamily: "'JetBrains Mono', monospace",
                 fontSize: 'clamp(0.9rem, 1.2vw, 1.1rem)',
@@ -452,7 +479,7 @@ export default function PlayCanvasPlatform() {
           ))}
         </div>
 
-        {/* Top-right system status */}
+        {/* System status */}
         <div style={{
           position: 'absolute',
           top: 100,
@@ -467,13 +494,12 @@ export default function PlayCanvasPlatform() {
           alignItems: 'flex-end',
           pointerEvents: 'none',
         }}>
-          <div>SCAN MODE · AUTONOMOUS</div>
-          <div>DRAFT STATIONS · 6 / 6 ONLINE</div>
+          <div>LIDAR SCAN · ACTIVE</div>
+          <div>POINT CLOUD · GENERATING</div>
+          <div>DIGITAL TWIN · SYNCHRONIZED</div>
           <div>COMPLIANCE · USCG 46 CFR</div>
-          <div>MOB DETECTION · ACTIVE</div>
         </div>
 
-        {/* Scroll cue */}
         <div style={{
           position: 'absolute',
           bottom: 28,
@@ -488,64 +514,51 @@ export default function PlayCanvasPlatform() {
         </div>
       </section>
 
-      {/* ── PLATFORM OVERVIEW ── */}
+      {/* ── HOW IT WORKS: Operational Steps ── */}
       <section className="section" style={{ background: 'var(--bg-secondary)' }}>
-        <div className="container" style={{ maxWidth: 820 }}>
-          <div className="section-label">Platform Overview</div>
-          <h2 style={{ fontSize: 'clamp(1.5rem, 2.8vw, 2.1rem)', marginBottom: 20 }}>
-            Hardware-Agnostic Intelligence
-          </h2>
-          <p style={{ color: 'var(--text-secondary)', lineHeight: 1.82, fontSize: '1.02rem' }}>
-            Whether your operation uses radar, LiDAR, pressure sensors, or visual monitoring,
-            FREQ AI&#39;s intelligence layer normalizes data from any source into a unified
-            operational picture. The result: autonomous drafting, real-time monitoring, and
-            verified compliance reporting — regardless of what hardware generates the input.
-          </p>
-        </div>
-      </section>
-
-      {/* ── CAPABILITIES ── */}
-      <section className="section">
         <div className="container">
-          <div className="section-label">Capabilities</div>
-          <h2 style={{ fontSize: 'clamp(1.5rem, 2.8vw, 2.1rem)', marginBottom: 40 }}>
-            Built for Maritime Intelligence at Scale
+          <div className="section-label">Operational Pipeline</div>
+          <h2 style={{ fontSize: 'clamp(1.5rem, 2.8vw, 2.1rem)', marginBottom: 12 }}>
+            From LiDAR Pulse to Verified Tonnage
           </h2>
+          <p style={{ color: 'var(--text-secondary)', maxWidth: 700, lineHeight: 1.75, marginBottom: 48 }}>
+            The integration of AI and LiDAR automates the traditional draft survey by replacing
+            visual inspection of hull marks with high-frequency laser scanning.
+          </p>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
             gap: 20,
           }}>
-            {capabilities.map((c, i) => (
+            {operationalSteps.map((s, i) => (
               <div
-                key={c.title}
+                key={s.num}
                 className="card"
                 style={{
-                  borderColor: activeCapability === i ? 'var(--teal)' : undefined,
+                  borderColor: activeStep === i ? 'var(--teal)' : undefined,
+                  boxShadow: activeStep === i ? '0 0 24px rgba(6,182,212,0.14)' : undefined,
                   transition: 'border-color 0.5s ease, box-shadow 0.5s ease',
-                  boxShadow: activeCapability === i
-                    ? '0 0 20px rgba(6,182,212,0.15)'
-                    : undefined,
                 }}
               >
                 <div style={{
                   fontFamily: "'JetBrains Mono', monospace",
-                  fontSize: '0.68rem',
+                  fontSize: '1.4rem',
+                  fontWeight: 700,
                   color: 'var(--teal)',
                   marginBottom: 10,
-                  opacity: 0.7,
+                  opacity: 0.85,
                 }}>
-                  {c.num}
+                  {s.num}
                 </div>
                 <div style={{
                   fontFamily: "'Space Grotesk', sans-serif",
                   fontWeight: 600,
                   marginBottom: 8,
                 }}>
-                  {c.title}
+                  {s.title}
                 </div>
-                <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                  {c.desc}
+                <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.65 }}>
+                  {s.desc}
                 </div>
               </div>
             ))}
@@ -553,47 +566,74 @@ export default function PlayCanvasPlatform() {
         </div>
       </section>
 
-      {/* ── USE CASES ── */}
-      <section className="section" style={{ background: 'var(--bg-secondary)' }}>
+      {/* ── KEY PRODUCTION OUTCOMES ── */}
+      <section className="section">
         <div className="container">
-          <div className="section-label">Use Cases</div>
-          <h2 style={{ fontSize: 'clamp(1.5rem, 2.8vw, 2.1rem)', marginBottom: 32 }}>
-            Where FREQ AI Deploys
+          <div className="section-label">Key Production Outcomes</div>
+          <h2 style={{ fontSize: 'clamp(1.5rem, 2.8vw, 2.1rem)', marginBottom: 40 }}>
+            Measurable Impact on Every Operation
           </h2>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-            gap: 20,
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: 24,
           }}>
-            {useCases.map(u => (
-              <div key={u.title} className="card">
+            {productionOutcomes.map(o => (
+              <div key={o.title} className="card">
+                <div className="data-value-lg" style={{ fontSize: '2rem', marginBottom: 8 }}>
+                  {o.value}
+                </div>
                 <div style={{
                   fontFamily: "'Space Grotesk', sans-serif",
                   fontWeight: 600,
                   marginBottom: 8,
                 }}>
-                  {u.title}
+                  {o.title}
                 </div>
-                <div style={{
-                  color: 'var(--text-secondary)',
-                  fontSize: '0.9rem',
-                  marginBottom: 14,
-                }}>
-                  {u.desc}
+                <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.65 }}>
+                  {o.desc}
                 </div>
-                {u.link && (
-                  <Link
-                    href={u.link}
-                    style={{
-                      color: 'var(--teal)',
-                      fontFamily: "'JetBrains Mono', monospace",
-                      fontSize: '0.82rem',
-                      textDecoration: 'none',
-                    }}
-                  >
-                    {u.linkText} &rarr;
-                  </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── IMMEDIATE AI IMPROVEMENTS ── */}
+      <section className="section" style={{ background: 'var(--bg-secondary)' }}>
+        <div className="container">
+          <div className="section-label">Beyond Drafting</div>
+          <h2 style={{ fontSize: 'clamp(1.5rem, 2.8vw, 2.1rem)', marginBottom: 12 }}>
+            Immediate AI Improvements in Maritime Cargo
+          </h2>
+          <p style={{ color: 'var(--text-secondary)', maxWidth: 700, lineHeight: 1.75, marginBottom: 40 }}>
+            Beyond drafting, AI offers immediate efficiency gains across critical cargo operations.
+          </p>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: 20,
+          }}>
+            {aiImprovements.map(a => (
+              <div key={a.title} className="card">
+                {a.stat && (
+                  <div className="data-value-lg" style={{ fontSize: '1.8rem', marginBottom: 6 }}>
+                    {a.stat}
+                    <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginLeft: 6 }}>
+                      {a.statLabel}
+                    </span>
+                  </div>
                 )}
+                <div style={{
+                  fontFamily: "'Space Grotesk', sans-serif",
+                  fontWeight: 600,
+                  marginBottom: 8,
+                }}>
+                  {a.title}
+                </div>
+                <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.65 }}>
+                  {a.desc}
+                </div>
               </div>
             ))}
           </div>
